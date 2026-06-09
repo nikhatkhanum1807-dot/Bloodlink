@@ -1,33 +1,42 @@
-  import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-  function App() {
-    const [donors, setDonors] = useState([]);
-    const [name, setName] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [bloodGroup, setBloodGroup] = useState("");
-    const [phone, setPhone] = useState("");
-    const [city, setCity] = useState("");
-    const [search, setSearch] = useState("");
+function App() {
+  // ✅ FIXED STATES (correct naming)
+  const [donors, setDonors] = useState([]);
 
+  const [name, setName] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+
+  const [search, setSearch] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // ✅ FETCH DATA
   useEffect(() => {
-  setLoading(true);
+    const fetchDonors = async () => {
+      try {
+        setLoading(true);
 
-  fetch("https://bloodlink-backend-a980.onrender.com/api/donors")
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch donors");
-      return res.json();
-    })
-    .then((data) => {
-      setDonors(data);
-      setLoading(false);
-      setError("");
-    })
-    .catch((err) => {
-      setError(err.message);
-      setLoading(false);
-    });
-}, []);
+        const res = await fetch("https://bloodlink-backend-a980.onrender.com/api/donors");
+        const data = await res.json();
+
+        setDonors(data);
+        console.log("API DATA:", data);
+        setError("");
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+        setError("Failed to load donors");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonors();
+  }, []);
+
   const addDonor = async () => {
     if (!name || !bloodGroup || !phone || !city) {
       alert("Please fill all fields");
@@ -94,7 +103,8 @@
     donor.city.toLowerCase().includes(search.toLowerCase()) ||
     donor.bloodGroup.toLowerCase().includes(search.toLowerCase())
   );
-
+  console.log("API DATA:", donors);
+  console.log("filteredDonors:", filteredDonors);
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, Helvetica, sans-serif', background: '#f5f5f5', minHeight: '100vh' }}>
 
