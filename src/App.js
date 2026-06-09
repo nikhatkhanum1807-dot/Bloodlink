@@ -12,7 +12,7 @@ function App() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/donors")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/donors`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch donors");
         return res.json();
@@ -27,69 +27,67 @@ function App() {
       });
   }, []);
 
-     const addDonor = async () => {
-      if (!name || !bloodGroup || !phone || !city) {
-        alert("Please fill all fields");
-        return;
-      }
+const addDonor = async () => {
+  if (!name || !bloodGroup || !phone || !city) {
+    alert("Please fill all fields");
+    return;
+  }
 
-      if (phone.length < 10) {
-       alert("Please enter a valid phone number");
-       return;
-      }
-       try {
-      const response = await fetch("http://localhost:5001/api/donors", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          bloodGroup,
-          phone,
-          city,
-        }),
-      });
+  if (phone.length < 10) {
+    alert("Please enter a valid phone number");
+    return;
+  }
 
-      if (!response.ok) {
-        throw new Error("Failed to add donor");
-      }
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/donors`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        bloodGroup,
+        phone,
+        city,
+      }),
+    });
 
-      const newDonor = await response.json();
-
-      setDonors((prev) => [...prev, newDonor.donor]);
-
-      setName("");
-      setBloodGroup("");
-      setPhone("");
-      setCity("");
-
-      alert("Donor Added Successfully!");
-    } catch (err) {
-      alert(err.message);
+    if (!response.ok) {
+      throw new Error("Failed to add donor");
     }
-  };
-  const deleteDonor = async (id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5001/api/donors/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete donor");
+    const newDonor = await response.json();
+
+    setDonors((prev) => [...prev, newDonor.donor]);
+
+    setName("");
+    setBloodGroup("");
+    setPhone("");
+    setCity("");
+
+    alert("Donor Added Successfully!");
+  } catch (err) {
+    alert(err.message);
+  }
+};
+const deleteDonor = async (id) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/donors/${id}`,
+      {
+        method: "DELETE",
       }
+    );
 
-      setDonors((prev) =>
-        prev.filter((donor) => donor._id !== id)
-      );
-    } catch (err) {
-      alert(err.message);
+    if (!response.ok) {
+      throw new Error("Failed to delete donor");
     }
-  };
 
+    setDonors((prev) => prev.filter((donor) => donor._id !== id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
   const filteredDonors = donors.filter((donor) =>
   donor.name.toLowerCase().includes(search.toLowerCase()) ||
   donor.city.toLowerCase().includes(search.toLowerCase()) ||
