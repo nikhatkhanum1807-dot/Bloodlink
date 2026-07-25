@@ -66,9 +66,9 @@ function App() {
         throw new Error("Failed to add donor");
       }
 
-  const newDonor = await response.json();
+  const data = await response.json();
 
-  setDonors((prev) => [...prev, newDonor.donor]);  
+  setDonors((prev) => [...prev, data.donor]);  
 
       setName("");
       setBloodGroup("");
