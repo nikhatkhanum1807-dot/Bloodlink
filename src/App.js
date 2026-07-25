@@ -68,7 +68,7 @@ function App() {
 
   const newDonor = await response.json();
 
-  setDonors((prev) => [...prev, newDonor]);  
+  setDonors((prev) => [...prev, newDonor.donor]);  
 
       setName("");
       setBloodGroup("");
