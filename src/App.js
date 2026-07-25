@@ -66,9 +66,9 @@ function App() {
         throw new Error("Failed to add donor");
       }
 
-      const newDonor = await response.json();
+  const newDonor = await response.json();
 
-      setDonors((prev) => [...prev, newDonor.donor]);
+  setDonors((prev) => [...prev, newDonor]);  
 
       setName("");
       setBloodGroup("");
@@ -80,24 +80,31 @@ function App() {
       alert(err.message);
     }
   };
-  const deleteDonor = async (id) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/donors/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete donor");
+ const deleteDonor = async (id) => {
+  try {
+    const response = await fetch(
+      `https://bloodlink-backend-a980.onrender.com/api/donors/${id}`,
+      {
+        method: "DELETE",
       }
+    );
+    console.log("Status:", response.status);
 
-      setDonors((prev) => prev.filter((donor) => donor._id !== id));
-    } catch (err) {
-      alert(err.message);
+    const data = await response.json();
+    console.log(data);
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Failed to delete donor");
     }
-  };
+
+    setDonors((prev) => prev.filter((donor) => donor._id !== id));
+
+    alert("Donor deleted successfully!");
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
     const filteredDonors = donors.filter((donor) =>
     donor.name.toLowerCase().includes(search.toLowerCase()) ||
     donor.city.toLowerCase().includes(search.toLowerCase()) ||
